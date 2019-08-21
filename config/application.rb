@@ -24,6 +24,8 @@ module ThermostatReader
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
 
+    config.active_record.schema_format = :sql
+
     config.generators do |g|
       g.orm :active_record, primary_key_type: :uuid
     end
