@@ -13,15 +13,15 @@ class CreateThermostats < ActiveRecord::Migration[6.0]
 
     create_table :thermostats, id: :uuid do |t|
       t.text :household_token, null: false, index: { unique: true }
-      t.column :location, :address
+      t.column :location, :address, null: false, default: "(,,,,)"
+
+      t.timestamps null: false
     end
   end
 
   def down
     drop_table :thermostats
 
-    execute <<-SQL
-      DROP TYPE address;
-    SQL
+    execute "DROP TYPE address;"
   end
 end

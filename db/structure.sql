@@ -66,6 +66,22 @@ CREATE TABLE ar_internal_metadata (
 
 
 --
+-- Name: readings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE readings (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    tracking_number integer DEFAULT 1 NOT NULL,
+    temperature double precision DEFAULT 0.0 NOT NULL,
+    humidity double precision DEFAULT 0.0 NOT NULL,
+    battery_charge double precision DEFAULT 0.0 NOT NULL,
+    thermostat_id uuid NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -81,7 +97,9 @@ CREATE TABLE schema_migrations (
 CREATE TABLE thermostats (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     household_token text NOT NULL,
-    location address
+    location address DEFAULT '(,,,,)'::address NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -91,6 +109,14 @@ CREATE TABLE thermostats (
 
 ALTER TABLE ONLY ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: readings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY readings
+    ADD CONSTRAINT readings_pkey PRIMARY KEY (id);
 
 
 --
@@ -110,10 +136,25 @@ ALTER TABLE ONLY thermostats
 
 
 --
+-- Name: index_readings_on_thermostat_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_readings_on_thermostat_id ON readings USING btree (thermostat_id);
+
+
+--
 -- Name: index_thermostats_on_household_token; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_thermostats_on_household_token ON thermostats USING btree (household_token);
+
+
+--
+-- Name: fk_rails_7c067bcadb; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY readings
+    ADD CONSTRAINT fk_rails_7c067bcadb FOREIGN KEY (thermostat_id) REFERENCES thermostats(id) ON DELETE CASCADE;
 
 
 --
@@ -124,6 +165,7 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20190821144350'),
-('20190821201356');
+('20190821201356'),
+('20190822122805');
 
 
