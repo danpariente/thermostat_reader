@@ -5,9 +5,16 @@ FactoryBot.define do
   end
 
   factory :reading do
+    tracking_number { 1 }
     temperature { 100.0 }
     humidity { 15.0 }
     battery_charge { 20.0 }
     thermostat
+
+    trait :invalid do
+      temperature { nil }
+      humidity { nil }
+      battery_charge { nil }
+    end
   end
 end
