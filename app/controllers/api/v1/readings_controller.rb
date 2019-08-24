@@ -8,7 +8,8 @@ module Api
       def create
         reading = thermostat.readings.new(reading_params)
 
-        if reading.save
+        if reading.valid?
+          collect_data_from_thermostat
           render json: serializer(reading), status: :created
         else
           render json: errors(reading), status: :unprocessable_entity
@@ -25,6 +26,10 @@ module Api
         Thermostat.find(params[:thermostat_id])
       end
 
+      def collect_data_from_thermostat
+        ThermostatDataJob.collect(thermostat, reading_params)
+      end
+
       def serializer(reading)
         ReadingSerializer.new(reading).serialized_json
       end
@@ -39,8 +44,8 @@ module Api
       end
 
       def reading_params
-        params.require(:reading)
-          .permit(:temperature, :humidity, :battery_charge)
+        params.require(:reading).
+          permit(:temperature, :humidity, :battery_charge)
       end
     end
   end
