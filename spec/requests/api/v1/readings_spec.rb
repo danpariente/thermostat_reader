@@ -51,7 +51,7 @@ RSpec.describe "POST /api/v1/thermostats/:thermostat_id/readings" do
     post "/api/v1/thermostats/#{thermostat.id}/readings", params: { reading: reading_params }
 
     expect(response.status).to eq(201)
-    expect(Reading.last.tracking_number).to eq(reading_params[:tracking_number])
+    expect(json_body.dig("data", "attributes", "tracking_number")).to eq(reading_params[:tracking_number])
   end
 
   context "when there are invalid attributes" do
