@@ -104,6 +104,39 @@ CREATE TABLE thermostats (
 
 
 --
+-- Name: stats; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW stats AS
+ SELECT readings.thermostat_id,
+    'temperature'::text AS stats_type,
+    avg(readings.temperature) AS average,
+    max(readings.temperature) AS maximum,
+    min(readings.temperature) AS minimum
+   FROM (readings
+     JOIN thermostats ON ((thermostats.id = readings.thermostat_id)))
+  GROUP BY readings.thermostat_id
+UNION
+ SELECT readings.thermostat_id,
+    'humidity'::text AS stats_type,
+    avg(readings.humidity) AS average,
+    max(readings.humidity) AS maximum,
+    min(readings.humidity) AS minimum
+   FROM (readings
+     JOIN thermostats ON ((thermostats.id = readings.thermostat_id)))
+  GROUP BY readings.thermostat_id
+UNION
+ SELECT readings.thermostat_id,
+    'battery_charge'::text AS stats_type,
+    avg(readings.battery_charge) AS average,
+    max(readings.battery_charge) AS maximum,
+    min(readings.battery_charge) AS minimum
+   FROM (readings
+     JOIN thermostats ON ((thermostats.id = readings.thermostat_id)))
+  GROUP BY readings.thermostat_id;
+
+
+--
 -- Name: ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -166,6 +199,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('20190821144350'),
 ('20190821201356'),
-('20190822122805');
+('20190822122805'),
+('20190902215814');
 
 

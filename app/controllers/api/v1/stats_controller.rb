@@ -2,7 +2,7 @@ module Api
   module V1
     class StatsController < BaseController
       def show
-        render json: serializer(Stats.new(thermostat))
+        render json: serializer(stats)
       end
 
       private
@@ -11,8 +11,8 @@ module Api
         StatsSerializer.new(stats).serialized_json
       end
 
-      def thermostat
-        Thermostat.find(params[:thermostat_id])
+      def stats
+        Stats.find(params[:thermostat_id])
       end
     end
   end
