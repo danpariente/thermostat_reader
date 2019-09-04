@@ -99,7 +99,8 @@ CREATE TABLE thermostats (
     household_token text NOT NULL,
     location address DEFAULT '(,,,,)'::address NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    readings_count integer DEFAULT 0
 );
 
 
@@ -200,6 +201,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190821144350'),
 ('20190821201356'),
 ('20190822122805'),
-('20190902215814');
+('20190902215814'),
+('20190904214342');
 
 

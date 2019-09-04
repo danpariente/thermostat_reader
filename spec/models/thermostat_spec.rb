@@ -14,4 +14,14 @@ RSpec.describe Thermostat do
       expect(thermostat.readings).to match([older_reading, newer_reading])
     end
   end
+
+  describe "#readings_count" do
+    it "returns the number of readings the thermostat has" do
+      thermostat = create(:thermostat)
+      create(:reading, thermostat: thermostat)
+      create(:reading, thermostat: thermostat)
+
+      expect(thermostat.readings_count).to eq(2)
+    end
+  end
 end
