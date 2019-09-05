@@ -1,8 +1,14 @@
+require "sidekiq/api"
+
 module Api
   module V1
     class ReadingsController < BaseController
       def show
-        render json: serializer(reading)
+        if reading_processed?
+          render json: serializer(reading)
+        else
+          render json: serializer(fetch_reading)
+        end
       end
 
       def create
@@ -18,16 +24,12 @@ module Api
 
       private
 
-      def reading
-        thermostat.readings.find_by!(tracking_number: params[:tracking_number])
-      end
-
-      def thermostat
-        Thermostat.find(params[:thermostat_id])
+      def fetch_reading
+        ReadingJobFetcher.new(params[:tracking_number]).fetch
       end
 
       def collect_data_from_thermostat
-        ThermostatDataJob.collect(thermostat, reading_params)
+        ThermostatDataJob.collect(reading_params)
       end
 
       def serializer(reading)
@@ -43,9 +45,24 @@ module Api
         }
       end
 
+      def reading
+        thermostat.readings.find_by(tracking_number: params[:tracking_number])
+      end
+
+      alias_method :reading_processed?, :reading
+
+      def thermostat
+        Thermostat.find(params[:thermostat_id])
+      end
+
       def reading_params
         params.require(:reading).
-          permit(:temperature, :humidity, :battery_charge)
+          permit(:temperature, :humidity, :battery_charge).
+          merge(
+            id: SecureRandom.uuid,
+            tracking_number: thermostat.readings_count + 1,
+            thermostat_id: thermostat.id
+          )
       end
     end
   end

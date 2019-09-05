@@ -1,13 +1,17 @@
 class ThermostatDataJob < ApplicationJob
   queue_as :collect_data
 
-  def self.collect(thermostat, reading_params)
-    self.perform_later(thermostat, reading_params)
+  def self.collect(reading_params)
+    Thermostat.increment_counter(
+      :readings_count, reading_params[:thermostat_id], touch: true
+    )
+
+    self.perform_later(reading_params)
   end
 
   private
 
-  def perform(thermostat, reading_params)
-    thermostat.readings.create!(reading_params)
+  def perform(reading_params)
+    Reading.create!(reading_params)
   end
 end

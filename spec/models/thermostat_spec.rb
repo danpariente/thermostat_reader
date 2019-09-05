@@ -21,7 +21,10 @@ RSpec.describe Thermostat do
       create(:reading, thermostat: thermostat)
       create(:reading, thermostat: thermostat)
 
-      expect(thermostat.readings_count).to eq(2)
+      Thermostat.increment_counter(:readings_count, thermostat.id, touch: true)
+      Thermostat.increment_counter(:readings_count, thermostat.id, touch: true)
+
+      expect(thermostat.reload.readings_count).to eq(2)
     end
   end
 end

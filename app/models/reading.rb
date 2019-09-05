@@ -1,5 +1,5 @@
 class Reading < ApplicationRecord
-  belongs_to :thermostat, counter_cache: true
+  belongs_to :thermostat
 
   validates :temperature, :humidity, :battery_charge, presence: true
 

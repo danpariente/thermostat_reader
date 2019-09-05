@@ -6,10 +6,10 @@ RSpec.describe ThermostatDataJob do
   describe ".collect" do
     it "enqueues the job" do
       thermostat = create(:thermostat)
-      reading_params = attributes_for(:reading)
+      reading_params = attributes_for(:reading, thermostat_id: thermostat.id)
 
       expect do
-        ThermostatDataJob.collect(thermostat, reading_params)
+        ThermostatDataJob.collect(reading_params)
       end.to change(ActiveJob::Base.queue_adapter.enqueued_jobs, :size).by(1)
     end
   end
