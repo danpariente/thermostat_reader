@@ -6,7 +6,8 @@ RSpec.describe "GET /api/v1/thermostats/:thermostat_id/stats" do
     create(:reading, thermostat: thermostat, temperature: 100.0)
     create(:reading, thermostat: thermostat, temperature: 0)
 
-    get "/api/v1/thermostats/#{thermostat.id}/stats", as: :json
+    get "/api/v1/thermostats/#{thermostat.id}/stats",
+    headers: set_headers(thermostat.household_token), as: :json
 
     expect(response.status).to eq(200)
 
