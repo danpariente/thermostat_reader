@@ -1,5 +1,6 @@
 # Thermostat Reader
 
+[![CircleCI](https://img.shields.io/circleci/project/github/naughtystyle/thermostat_reader.svg)](https://circleci.com/gh/naughtystyle/thermostat_reader/tree/master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/codeclimate/codeclimate/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/codeclimate/codeclimate/test_coverage)
 
