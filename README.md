@@ -1,24 +1,143 @@
-# README
+# Thermostat Reader
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+[![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/codeclimate/codeclimate/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/codeclimate/codeclimate/test_coverage)
 
-Things you may want to cover:
+This is the API documentation for the IoT Thermostats.
 
-* Ruby version
+API version is scoped via the URL. For example:
 
-* System dependencies
+```
+    http://thermostatreader.io/api/v1/thermostats/:thermostat_id/stats
+```
 
-* Configuration
+`POST` endpoints accept JSON data in the body of the request. All requests require a `"thermostat-auth-token": THERMOSTAT_HOUSEHOLD_TOKEN` header. Responses follow the JSON:API specification.
 
-* Database creation
 
-* Database initialization
+`POST /api/v1/thermostats/:thermostat_id/readings`
+--------------
 
-* How to run the test suite
+Example request data:
+```javascript
+{
+  "temperature" : 100.0
+  "humidity" : 15.0
+  "battery_charge" : 20.0
+}
+```
+* Required: `temperature`, `humidity`, `battery_charge`
+* Required headers: `"thermostat-auth-token": THERMOSTAT_HOUSEHOLD_TOKEN`
 
-* Services (job queues, cache servers, search engines, etc.)
+Example response:
+```javascript
+{
+  "data": {
+    "id": "58c11d69-4aee-427d-987d-a797e44530fa",
+    "type": "reading",
+    "attributes": {
+      "tracking_number": 42,
+      "temperature": 11.0,
+      "humidity": 22.0,
+      "battery_charge": 33.0
+    },
+    "relationships": {
+      "thermostat": {
+        "data": {
+          "id": "d05f3009-7e93-4ab9-b671-b6377393c2df",
+          "type": "thermostat"
+        }
+      }
+    }
+  }
+}
+```
 
-* Deployment instructions
+Example `422` response:
+```javascript
+{
+  "errors": {
+    "title": "UnprocessableEntity",
+    "detail": "Temperature can't be blank, Humidity can't be blank, Battery charge can't be blank"
+  }
+}
+```
 
-* ...
+`GET /api/v1/thermostats/:thermostat_id/readings/:tracking_number`
+----------------------
+
+Example response:
+```javascript
+{
+  "data": {
+    "id": "eef57a70-8b17-45fd-9abf-609c13e26ec8",
+    "type": "reading",
+    "attributes": {
+      "tracking_number": 23,
+      "temperature": 25.0,
+      "humidity": 25.0,
+      "battery_charge": 25.0
+    },
+    "relationships": {
+      "thermostat": {
+        "data": {
+          "id": "d05f3009-7e93-4ab9-b671-b6377393c2df",
+          "type": "thermostat"
+        }
+      }
+    }
+  }
+}
+```
+
+Example `404` response:
+```javascript
+{
+  "errors": {
+    "title": "RecordNotFound",
+    "detail": "Record not found."
+  }
+}
+```
+
+* Required headers: `"thermostat-auth-token": THERMOSTAT_HOUSEHOLD_TOKEN`
+
+
+`GET  /api/v1/thermostats/:thermostat_id/stats`
+------------------------
+
+Example response:
+```javascript
+{
+  "data": {
+    "id": "d05f3009-7e93-4ab9-b671-b6377393c2df",
+    "type": "stats",
+    "attributes": {
+      "temperature": {
+        "average": 28.6,
+        "maximum": 111.0,
+        "minimum": 10.0
+      },
+      "humidity": {
+        "average": 36.1,
+        "maximum": 42.0,
+        "minimum": 0.0
+      },
+      "battery_charge": {
+        "average": 38.7,
+        "maximum": 100.0,
+        "minimum": 0.0
+      }
+    },
+    "relationships": {
+      "thermostat": {
+        "data": {
+          "id": "d05f3009-7e93-4ab9-b671-b6377393c2df",
+          "type": "thermostat"
+        }
+      }
+    }
+  }
+}
+```
+
+* Required headers: `"thermostat-auth-token": THERMOSTAT_HOUSEHOLD_TOKEN`
