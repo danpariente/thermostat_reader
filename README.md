@@ -142,3 +142,8 @@ Example response:
 ```
 
 * Required headers: `"thermostat-auth-token": THERMOSTAT_HOUSEHOLD_TOKEN`
+
+## Start Application in Development
+
+Configure your local environment with `./bin/setup`.
+After that start the application with the `foreman start` command.

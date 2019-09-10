@@ -1,0 +1,12 @@
+---
+:verbose: false
+:concurrency: 10
+
+:queues:
+  - collect_data
+  - default
+
+production:
+  :concurrency: 25
+staging:
+  :concurrency: 15
