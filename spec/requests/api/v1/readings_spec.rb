@@ -5,7 +5,8 @@ RSpec.describe "GET /api/v1/thermostats/:thermostat_id/readings/:tracking_number
     reading = create(:reading)
     thermostat = reading.thermostat
 
-    get "/api/v1/thermostats/#{thermostat.id}/readings/#{reading.tracking_number}"
+    get "/api/v1/thermostats/#{thermostat.id}/readings/#{reading.tracking_number}",
+    headers: set_headers(thermostat.household_token)
 
     expect(response.status).to eq(200)
 
@@ -35,7 +36,8 @@ RSpec.describe "GET /api/v1/thermostats/:thermostat_id/readings/:tracking_number
       thermostat = create(:thermostat)
       nonexistent_tracker_number = 371
 
-      get "/api/v1/thermostats/#{thermostat.id}/readings/#{nonexistent_tracker_number}"
+      get "/api/v1/thermostats/#{thermostat.id}/readings/#{nonexistent_tracker_number}",
+      headers: set_headers(thermostat.household_token)
 
       expect(response.status).to eq(404)
       expect(json_body.fetch("errors")).not_to be_empty
@@ -48,7 +50,8 @@ RSpec.describe "POST /api/v1/thermostats/:thermostat_id/readings" do
     thermostat = create(:thermostat)
     reading_params = attributes_for(:reading)
 
-    post "/api/v1/thermostats/#{thermostat.id}/readings", params: { reading: reading_params }
+    post "/api/v1/thermostats/#{thermostat.id}/readings", params: { reading: reading_params }.to_json,
+    headers: set_headers(thermostat.household_token)
 
     expect(response.status).to eq(201)
     expect(json_body.dig("data", "attributes", "tracking_number")).to eq(reading_params[:tracking_number])
@@ -59,7 +62,8 @@ RSpec.describe "POST /api/v1/thermostats/:thermostat_id/readings" do
       thermostat = create(:thermostat)
       reading_params = attributes_for(:reading, :invalid)
 
-      post "/api/v1/thermostats/#{thermostat.id}/readings", params: { reading: reading_params }
+      post "/api/v1/thermostats/#{thermostat.id}/readings", params: { reading: reading_params }.to_json,
+      headers: set_headers(thermostat.household_token)
 
       expect(response.status).to eq(422)
       expect(json_body.fetch("errors")).not_to be_empty
