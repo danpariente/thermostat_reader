@@ -1,4 +1,6 @@
 class Stats < ApplicationRecord
+  include AverageCalculator
+
   READING_TYPES = %i(
     temperature
     humidity
@@ -49,35 +51,25 @@ class Stats < ApplicationRecord
 
   def current_stats_for(reading_type)
     {
-      "average" => recalculate_average(reading_type),
+      "average" => recalculate_average(thermostat, reading_type, readings_in_queue),
       "maximum" => [send("persisted_#{reading_type}")["maximum"], *fetcher(reading_type)].max,
       "minimum" => [send("persisted_#{reading_type}")["minimum"], *fetcher(reading_type)].min
     }
   end
 
-  def recalculate_average(reading_type)
-    current_average = send("persisted_#{reading_type}")["average"]
-    return current_average if synchronized?
-    total_readings_count = thermostat.reload.readings_count
-    persisted_readings_count = total_readings_count - readings_in_queue.size
-    new_reading_sum = Array(fetcher(reading_type)).sum
-
-    (((current_average * persisted_readings_count) + new_reading_sum) / total_readings_count).to_f.round(2)
-  end
-
   def fetcher(reading_type)
-    ReadingJobFetcher.new(*readings_in_queue.to_a).fetch.map(&reading_type.to_sym) rescue []
-  end
-
-  def synchronized?
-    readings_in_queue.size.zero?
+    ReadingJobFetcher.new(*readings_in_queue).fetch.map(&reading_type.to_sym) rescue []
   end
 
   def readings_in_queue
     Range.new(
       thermostat.reload.readings.order(:created_at).last.tracking_number,
       thermostat.reload.readings_count, true
-    )
+    ).to_a
+  end
+
+  def new_reading_sum(reading_type)
+    Array(fetcher(reading_type)).sum
   end
 
   def thermostat

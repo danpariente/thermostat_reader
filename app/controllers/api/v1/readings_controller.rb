@@ -36,15 +36,6 @@ module Api
         ReadingSerializer.new(reading).serialized_json
       end
 
-      def errors(reading)
-        {
-          errors: {
-            title: "UnprocessableEntity",
-            detail: reading.errors.full_messages.join(", ")
-          }
-        }
-      end
-
       def reading
         thermostat.readings.find_by(tracking_number: params[:tracking_number])
       end

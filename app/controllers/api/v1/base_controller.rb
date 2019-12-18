@@ -25,6 +25,15 @@ module Api
         request.headers["thermostat-auth-token"]
       end
 
+      def errors(model)
+        {
+          errors: {
+            title: "UnprocessableEntity",
+            detail: model.errors.full_messages.join(", ")
+          }
+        }
+      end
+
       def not_found
         render json: {
           errors: {
